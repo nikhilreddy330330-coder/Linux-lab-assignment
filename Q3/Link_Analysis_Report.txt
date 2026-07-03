@@ -1,1 +1,60 @@
+cd ~/linux-lab-assignment/Q3_Link_Analysis
 
+cat > Link_Analysis_Report.txt << 'EOF'
+FILE SYSTEM AND LINK ANALYSIS REPORT
+======================================
+
+1. Inode Numbers
+original.txt: 41991
+hardlink.txt:  41991 (same as original)
+symlink.txt:   41992 (different)
+Observation: The hard link shares the exact same inode number as the
+original file, proving both names point to the same underlying data on
+disk. The symlink has its own separate inode, since it is a distinct file
+that merely stores a path/reference to the target.
+
+2. Comparison Between Hard Link and Symbolic Link
+Command: ln original.txt hardlink.txt   (hard link)
+Command: ln -s original.txt symlink.txt (symbolic link)
+Output (stat):
+- hardlink.txt: Inode 41991, Links: 2, size 26 bytes, type "regular file"
+- symlink.txt:  Inode 41992, Links: 1, size 12 bytes, type "symbolic link",
+  permissions shown as 0777 lrwxrwxrwx (symlink permissions are
+  informational; actual access is governed by the target file)
+Observation: A hard link is an additional directory entry pointing to the
+same inode/data blocks as the original, and increases the file's link
+count. A symbolic link is a separate small file containing only a text
+path to its target, has its own inode, and can cross filesystem
+boundaries (hard links cannot).
+
+3. Effect of Deleting the Original File
+Command: rm original.txt
+Command: cat hardlink.txt   -> "This is the original file" (still works)
+Command: cat symlink.txt    -> "cat: symlink.txt: No such file or directory"
+Observation: After deleting original.txt, hardlink.txt still opens and
+reads correctly because the underlying inode and data blocks remain on
+disk until the link count reaches zero (it dropped from 2 to 1, not 0).
+symlink.txt, however, becomes a broken/dangling link, since it only stored
+the path "original.txt", which no longer resolves to any file.
+
+4. Metadata Collected Using Linux Utilities
+Command: stat original.txt / stat hardlink.txt / stat symlink.txt
+Key fields observed: Inode, Links, File type, Size, Access/Modify/
+Change/Birth timestamps, permissions (Access field), Uid/Gid.
+Observation: The stat command exposes low-level filesystem metadata not
+shown by a plain ls, and was essential here to directly compare inode
+numbers and link counts between the three files.
+
+5. Conclusions Drawn From the Experiment
+Hard links are true aliases for the same file data: deleting one "name"
+does not remove the underlying content as long as at least one other link
+remains. Symbolic links are lightweight pointers/shortcuts that reference
+a file by path rather than by inode, and therefore break silently if the
+target file is deleted, renamed, or moved. This has practical implications:
+backup scripts, configuration files, or deployment pipelines that rely on
+symlinks can fail unexpectedly if the underlying file changes location,
+whereas hard links are more resilient to the "original" name being removed
+but cannot span across different filesystems/partitions.
+EOF
+
+cat Link_Analysis_Report.txt
