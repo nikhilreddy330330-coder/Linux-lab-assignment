@@ -1,1 +1,31 @@
+cd ~/linux-lab-assignment/Q1_Environment_Verification
 
+cat > Commands_and_Outputs.txt << 'EOF'
+$ whoami
+nikhil
+
+$ groups
+nikhil adm cdrom sudo dip plugdev users
+
+$ echo $SHELL
+/bin/bash
+
+$ pwd
+/home/nikhil/linux-lab-assignment/Q1_Environment_Verification
+
+$ ls -la
+total 8
+drwxr-xr-x 2 nikhil nikhil 4096 Jul  3 09:25 .
+drwxr-xr-x 3 nikhil nikhil 4096 Jul  3 09:25 ..
+
+$ ping -c 4 google.com
+PING google.com (142.251.126.100) 56(84) bytes of data.
+64 bytes from cn-in-f100.1e100.net (142.251.126.100): icmp_seq=1 ttl=110 time=21.5 ms
+64 bytes from cn-in-f100.1e100.net (142.251.126.100): icmp_seq=2 ttl=110 time=23.0 ms
+64 bytes from cn-in-f100.1e100.net (142.251.126.100): icmp_seq=3 ttl=110 time=23.1 ms
+64 bytes from cn-in-f100.1e100.net (142.251.126.100): icmp_seq=4 ttl=110 time=23.8 ms
+
+--- google.com ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3007ms
+rtt min/avg/max/mdev = 21.511/22.846/23.767/0.825 ms
+EOF
