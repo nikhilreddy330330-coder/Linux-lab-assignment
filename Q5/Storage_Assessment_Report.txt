@@ -43,4 +43,35 @@ shown as a negative number) because NTFS does not use a traditional
 inode structure. These values are not meaningful and are a known
 WSL/9p limitation rather than an actual storage issue.
 
-5. STORAGE
+5. STORAGE HEALTH OBSERVATIONS
+-----------------------------
+- The Linux root filesystem (/dev/sdd) is very healthy: only 1% disk
+  usage and 1% inode usage out of a 1TB volume, indicating no
+  immediate capacity concerns for the WSL environment.
+- The Windows C: drive is at 44% usage (104G of 238G used), which is
+  moderate and not currently concerning, but should be monitored if
+  usage trends upward.
+- Inode counts on the ext4 root filesystem are extremely low relative
+  to capacity (45,041 used of ~67 million available), so inode
+  exhaustion is not a risk at this time.
+- The disparity between low inode usage and low disk usage suggests
+  the current file count is small and files are not disproportionately
+  small (which would normally consume inodes faster than disk space).
+- Inode data is not meaningful for Windows-mounted (9p) drives due to
+  filesystem architecture differences; disk usage percentage should be
+  relied on instead for those volumes.
+
+6. RECOMMENDATIONS
+-----------------------------
+- Continue periodic monitoring of the C: drive (currently 44% used)
+  to ensure it does not approach capacity thresholds (e.g., 80%+).
+- Set up automated alerts (e.g., a scheduled df -h check via cron)
+  for the root filesystem and C: drive to catch unexpected growth early.
+- No immediate action needed for inode capacity on /dev/sdd, but
+  re-check inode usage if the workload shifts toward creating large
+  numbers of small files (e.g., logs, cache files, temp files).
+- Before deploying the new application server, confirm the 1TB WSL
+  virtual disk (sdd) has sufficient headroom for expected application
+  data growth -- currently 955G free, which is ample.
+- Periodically clean up unused files on the Windows C: drive, since it
+  has the highest utilization (44%) of all volumes assessed.
