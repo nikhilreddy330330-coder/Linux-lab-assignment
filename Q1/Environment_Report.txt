@@ -1,1 +1,41 @@
+LINUX ENVIRONMENT VERIFICATION REPORT
+======================================
 
+1. Username and Groups
+Command: whoami
+Output: nikhil
+Command: groups
+Output: nikhil adm cdrom sudo dip plugdev users
+Observation: whoami confirms the currently logged-in user is "nikhil". The
+groups command shows this user belongs to several groups, including sudo,
+which grants administrative privileges on this system.
+
+2. Current Shell
+Command: echo $SHELL
+Output: /bin/bash
+Observation: Confirms Bash is the default login shell used to interpret and
+execute commands on this system.
+
+3. Current Working Directory
+Command: pwd
+Output: /home/nikhil/linux-lab-assignment/Q1_Environment_Verification
+Observation: Shows the absolute path of the directory the shell is currently
+operating in, confirming the workspace location.
+
+4. Files and Directories in Workspace
+Command: ls -la
+Output:
+total 8
+drwxr-xr-x 2 nikhil nikhil 4096 Jul 3 09:25 .
+drwxr-xr-x 3 nikhil nikhil 4096 Jul 3 09:25 ..
+Observation: The -la flags list all entries including hidden ones. Only "."
+(current directory) and ".." (parent directory) are present, confirming the
+workspace is freshly created and empty before this lab's files are added.
+
+5. Network Connectivity
+Command: ping -c 4 google.com
+Output: 4 packets transmitted, 4 received, 0% packet loss, rtt
+min/avg/max/mdev = 21.511/22.846/23.767/0.825 ms
+Observation: All 4 ICMP packets were successfully sent and received with 0%
+packet loss, confirming the system has working DNS resolution and internet
+connectivity, both required before accessing company/remote resources.
