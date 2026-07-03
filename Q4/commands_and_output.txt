@@ -1,1 +1,65 @@
+cd ~/linux-lab-assignment/Q4_IO_Investigation
 
+cat > Commands_and_Outputs.txt << 'EOF'
+$ tail -f /var/log/syslog > app_output.log 2> app_error.log &
+[1] 1243
+
+$ echo $!
+1243
+
+$ ls -l /proc/1243/fd
+total 0
+lrwx------ 1 nikhil nikhil 64 Jul  3 15:59 0 -> /dev/pts/0
+l-wx------ 1 nikhil nikhil 64 Jul  3 15:59 1 -> /home/nikhil/linux-lab-assignment/Q4_IO_Investigation/app_output.log
+l-wx------ 1 nikhil nikhil 64 Jul  3 15:59 2 -> /home/nikhil/linux-lab-assignment/Q4_IO_Investigation/app_error.log
+lr-x------ 1 nikhil nikhil 64 Jul  3 15:59 3 -> anon_inode:inotify
+lrwx------ 1 nikhil nikhil 64 Jul  3 15:59 4 -> 'anon_inode:[eventpoll]'
+lrwx------ 1 nikhil nikhil 64 Jul  3 15:59 5 -> 'anon_inode:[eventfd]'
+lr-x------ 1 nikhil nikhil 64 Jul  3 15:59 6 -> /var/log/syslog
+
+$ lsof -p 1243
+COMMAND  PID  USER   FD   TYPE DEVICE   SIZE/OFF   NODE NAME
+tail    1243 nikhil  cwd   DIR   8,48       4096  41994 /home/nikhil/linux-lab-assignment/Q4_IO_Investigation
+tail    1243 nikhil  rtd   DIR   8,48       4096      2 /
+tail    1243 nikhil  txt   REG   8,48   11352352   1585 /usr/lib/cargo/bin/coreutils/tail
+tail    1243 nikhil  mem   REG   8,48    2186512  14176 /usr/lib/x86_64-linux-gnu/libc.so.6
+tail    1243 nikhil  mem   REG   8,48     699056  14443 /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0.14.0
+tail    1243 nikhil  mem   REG   8,48    1198376  14388 /usr/lib/x86_64-linux-gnu/libm.so.6
+tail    1243 nikhil  mem   REG   8,48     187120  14275 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+tail    1243 nikhil  mem   REG   8,48     199120  14478 /usr/lib/x86_64-linux-gnu/libselinux.so.1
+tail    1243 nikhil  mem   REG   8,48     254864  13931 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+tail    1243 nikhil   0u   CHR  136,0        0t0      3 /dev/pts/0
+tail    1243 nikhil   1w   REG   8,48       5092  41995 /home/nikhil/linux-lab-assignment/Q4_IO_Investigation/app_output.log
+tail    1243 nikhil   2w   REG   8,48          0  41996 /home/nikhil/linux-lab-assignment/Q4_IO_Investigation/app_error.log
+tail    1243 nikhil   3r a_inode   0,16          0     45 inotify
+tail    1243 nikhil   4u a_inode   0,16          0     45 [eventpoll:3,5]
+tail    1243 nikhil   5u a_inode   0,16          0     45 [eventfd:61]
+tail    1243 nikhil   6r   REG   8,48   201822  33557352 /var/log/syslog
+
+$ echo "test stdout redirection" > stdout_test.txt
+$ cat stdout_test.txt
+test stdout redirection
+
+$ ls /nonexistent_file 2> error_test.txt
+$ cat error_test.txt
+ls: cannot access '/nonexistent_file': No such file or directory
+
+$ echo "both streams" > combined.txt 2>&1
+$ cat combined.txt
+both streams
+
+$ ulimit -a
+open files                     (-n) 10240
+max user processes             (-u) 15363
+stack size          (kbytes, -s) 8192
+core file size      (blocks, -c) 0
+[... other limits ...]
+
+$ ulimit -n
+10240
+
+$ kill %1
+[1]+  Terminated              tail -f /var/log/syslog > app_output.log 2> app_error.log
+EOF
+
+cat Commands_and_Outputs.txt
