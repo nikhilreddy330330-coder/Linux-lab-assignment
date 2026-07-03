@@ -1,1 +1,70 @@
+FILE ACCESS AND I/O INVESTIGATION REPORT
+==========================================
 
+1. Open Files Identified
+Command: tail -f /var/log/syslog > app_output.log 2> app_error.log &
+Command: lsof -p 1243
+Output (key lines):
+  tail  1243 nikhil  1w  REG  8,48  ...  app_output.log
+  tail  1243 nikhil  2w  REG  8,48  ...  app_error.log
+  tail  1243 nikhil  6r  REG  8,48  ...  /var/log/syslog
+Observation: lsof revealed every file the background process had open,
+including its redirected stdout/stderr log files and the source log file
+it was tailing, along with shared libraries and internal kernel objects
+used for monitoring file changes.
+
+2. File Descriptor Observations
+Command: ls -l /proc/1243/fd
+Output:
+  0 -> /dev/pts/0            (stdin)
+  1 -> app_output.log        (stdout, redirected)
+  2 -> app_error.log         (stderr, redirected)
+  3 -> anon_inode:inotify
+  4 -> anon_inode:[eventpoll]
+  5 -> anon_inode:[eventfd]
+  6 -> /var/log/syslog
+Observation: File descriptors 0, 1, and 2 follow the standard convention
+(stdin/stdout/stderr); descriptor 1 and 2 were successfully redirected to
+the log files as intended. Higher-numbered descriptors (3-6) represent
+additional resources the process opened, including the actual source file
+being tailed and kernel notification mechanisms used to detect new lines.
+
+3. Output Redirection and Error Redirection Results
+Command: echo "test stdout redirection" > stdout_test.txt
+Result: File contains "test stdout redirection"
+Command: ls /nonexistent_file 2> error_test.txt
+Result: File contains "ls: cannot access '/nonexistent_file': No such
+file or directory"
+Command: echo "both streams" > combined.txt 2>&1
+Result: File contains "both streams"
+Observation: The ">" operator redirects only stdout, "2>" redirects only
+stderr, and "2>&1" merges stderr into the same destination as stdout. This
+directly demonstrates why an application experiencing "logging issues"
+might be missing error output: if only stdout is redirected to a log file
+without also redirecting stderr (or vice versa), errors and normal output
+end up separated or lost depending on how the process is launched.
+
+4. Resource Limits Observed
+Command: ulimit -a
+Command: ulimit -n
+Output: open files (-n): 10240, max user processes (-u): 15363,
+stack size (-s): 8192 KB, core file size (-c): 0
+Observation: The OS enforces a per-process cap of 10240 simultaneously
+open file descriptors on this system. An application leaking file handles
+(never closing files it opens) could eventually hit this ceiling and start
+throwing "too many open files" errors, which is a common real-world cause
+of logging or I/O failures in long-running services.
+
+5. How Linux Manages File I/O
+Explanation: Every file a process opens is represented by a small integer
+called a file descriptor, tracked in a per-process file descriptor table.
+Each entry points to an entry in the kernel's system-wide open file table,
+which tracks the current read/write offset and access mode, and that in
+turn points to the file's inode, which holds the actual metadata and
+location of the data on disk. Shell redirection operators (>, >>, <, 2>,
+2>&1) work by changing which underlying file or stream a given descriptor
+number points to before the program even starts running, which is why
+redirection is transparent to the application itself. This layered design
+is also why a background process can keep multiple files open at once
+(as seen with fd 1, 2, and 6 above) while the kernel enforces limits on
+the total count via ulimit.
