@@ -1,1 +1,66 @@
+COMMANDS AND OUTPUTS
+==================================
+Date: July 3, 2026
+Prepared by: Nikhil
 
+$ lsblk
+NAME MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+sda    8:0    0 356.9M  1 disk
+sdb    8:16   0 159.4M  1 disk
+sdc    8:32   0     1G  0 disk [SWAP]
+sdd    8:48   0     1T  0 disk /mnt/wslg/distro
+
+$ df -hT
+Filesystem     Type     Size  Used Avail Use% Mounted on
+none           overlay  1.9G     0  1.9G   0% /usr/lib/modules/6.18.33.2-microsoft-standard-WSL2
+none           tmpfs    1.9G  4.0K  1.9G   1% /mnt/wsl
+drivers        9p       238G  104G  135G  44% /usr/lib/wsl/drivers
+/dev/sdd       ext4    1007G  1.6G  955G   1% /
+none           tmpfs    1.9G   52K  1.9G   1% /mnt/wslg
+none           overlay  1.9G     0  1.9G   0% /usr/lib/wsl/lib
+rootfs         rootfs   1.9G  2.8M  1.9G   1% /init
+none           tmpfs    1.9G  504K  1.9G   1% /run
+none           tmpfs    1.9G     0  1.9G   0% /run/lock
+none           tmpfs    1.9G     0  1.9G   0% /run/shm
+none           overlay  1.9G   80K  1.9G   1% /mnt/wslg/versions.txt
+none           overlay  1.9G   80K  1.9G   1% /mnt/wslg/doc
+C:\            9p       238G  104G  135G  44% /mnt/c
+D:\            9p       311G  105M  311G   1% /mnt/d
+E:\            9p       311G  105M  311G   1% /mnt/e
+F:\            9p       311G  105M  311G   1% /mnt/f
+tmpfs          tmpfs    1.9G     0  1.9G   0% /tmp
+tmpfs          tmpfs    386M   12K  386M   1% /run/user/1000
+
+$ df -h
+Filesystem      Size  Used Avail Use% Mounted on
+none            1.9G     0  1.9G   0% /usr/lib/modules/6.18.33.2-microsoft-standard-WSL2
+none            1.9G  4.0K  1.9G   1% /mnt/wsl
+drivers         238G  104G  135G  44% /usr/lib/wsl/drivers
+/dev/sdd       1007G  1.6G  955G   1% /
+none            1.9G   52K  1.9G   1% /mnt/wslg
+none            1.9G     0  1.9G   0% /usr/lib/wsl/lib
+rootfs          1.9G  2.8M  1.9G   1% /init
+none            1.9G  504K  1.9G   1% /run
+C:\             238G  104G  135G  44% /mnt/c
+D:\             311G  105M  311G   1% /mnt/d
+E:\             311G  105M  311G   1% /mnt/e
+F:\             311G  105M  311G   1% /mnt/f
+tmpfs           1.9G     0  1.9G   0% /tmp
+tmpfs           386M   12K  386M   1% /run/user/1000
+
+$ df -i
+Filesystem       Inodes   IUsed    IFree IUse% Mounted on
+none             493008       5   493003    1% /usr/lib/modules/6.18.33.2-microsoft-standard-WSL2
+none             493008       2   493006    1% /mnt/wsl
+drivers             999 -999001  1000000     - /usr/lib/wsl/drivers
+/dev/sdd       67108864   45041 67063823    1% /
+none             493008      23   492985    1% /mnt/wslg
+none             493008       5   493003    1% /usr/lib/wsl/lib
+rootfs           491568      12   491556    1% /init
+none             493008     547   492461    1% /run
+C:\                 999 -999001  1000000     - /mnt/c
+D:\                 999 -999001  1000000     - /mnt/d
+E:\                 999 -999001  1000000     - /mnt/e
+F:\                 999 -999001  1000000     - /mnt/f
+tmpfs           1048576       9  1048567    1% /tmp
+tmpfs             98601      44    98557    1% /run/user/1000
