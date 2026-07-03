@@ -1,1 +1,46 @@
+STORAGE HEALTH ASSESSMENT REPORT
+==================================
+Date: July 3, 2026
+Prepared by: Nikhil
 
+1. AVAILABLE STORAGE DEVICES
+-----------------------------
+- sda: 356.9M disk (no filesystem/mount shown)
+- sdb: 159.4M disk (no filesystem/mount shown)
+- sdc: 1G disk, type SWAP (WSL swap space)
+- sdd: 1T disk, mounted at /mnt/wslg/distro (WSL virtual disk backing the Linux filesystem)
+
+2. MOUNTED FILE SYSTEMS
+-----------------------------
+Key mounts identified via df -hT:
+- /dev/sdd (ext4)   -> / (root filesystem)          1007G total
+- drivers (9p)      -> /usr/lib/wsl/drivers          238G total
+- C:\ (9p)          -> /mnt/c (Windows C: drive)     238G total
+- D:\, E:\, F:\ (9p)-> /mnt/d, /mnt/e, /mnt/f         311G each
+
+Most other entries (tmpfs, overlay, rootfs) are virtual/in-memory
+filesystems used internally by WSL2 and are not persistent disk storage.
+
+3. DISK USAGE STATISTICS
+-----------------------------
+Root filesystem (/) on /dev/sdd:
+- Size: 1007G | Used: 1.6G | Available: 955G | Use%: 1%
+
+Windows C: drive (/mnt/c):
+- Size: 238G | Used: 104G | Available: 135G | Use%: 44%
+
+Windows D:, E:, F: drives:
+- Size: 311G each | Used: ~105M each | Use%: 1%
+
+4. INODE UTILIZATION
+-----------------------------
+Root filesystem (/) on /dev/sdd:
+- Inodes: 67,108,864 | Used: 45,041 | Free: 67,063,823 | IUse%: 1%
+
+Note: Windows drives (C:, D:, E:, F: and "drivers") mounted via the
+9p protocol report placeholder inode values (999 total, with used
+shown as a negative number) because NTFS does not use a traditional
+inode structure. These values are not meaningful and are a known
+WSL/9p limitation rather than an actual storage issue.
+
+5. STORAGE
