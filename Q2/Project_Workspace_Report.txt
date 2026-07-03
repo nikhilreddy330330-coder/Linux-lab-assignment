@@ -1,1 +1,56 @@
+SECURE PROJECT WORKSPACE REPORT
+=================================
 
+1. Directory Structure Created
+ProjectAlpha/
+ ├── docs/
+ ├── src/
+ └── logs/
+Command: mkdir -p ProjectAlpha/{docs,src,logs}
+Observation: Created a parent project folder with three subfolders separating
+documentation, source code, and logs, giving a clean, organized structure
+suitable for controlled per-purpose access.
+
+2. File Permissions Before Modification
+Command: ls -l ProjectAlpha/docs/notes.txt
+Output: -rw-r--r-- 1 nikhil nikhil 0 Jul 3 15:33 notes.txt
+Observation: The file was created with default permissions of 644 (owner:
+read/write, group: read-only, others: read-only), determined by the system
+umask. This means any user on the system could read the file's contents,
+which is too permissive for private project data.
+
+3. File Permissions After Modification
+Command: chmod 750 ProjectAlpha
+Output: drwxr-x--- 5 nikhil nikhil 4096 Jul 3 15:33 ProjectAlpha
+Command: chmod 640 ProjectAlpha/docs/notes.txt
+Output: -rw-r----- 1 nikhil nikhil 0 Jul 3 15:33 notes.txt
+Observation: The ProjectAlpha directory now allows only the owner full
+access, and the group read+execute access (needed to list/enter it); others
+have no access at all. The notes.txt file now allows the owner read/write
+and the group read-only, while others have no access, significantly
+tightening confidentiality.
+
+4. Ownership Details
+Command: chown nikhil:nikhil ProjectAlpha/docs/notes.txt
+Output: -rw-r----- 1 nikhil nikhil 0 Jul 3 15:33 notes.txt
+Observation: Explicitly confirms the file's owner and group are both
+"nikhil", ensuring only this user (and members of the nikhil group) have
+any access rights, and there is no ambiguity about who controls the file.
+
+5. Umask Value Used
+Command: umask
+Output: 0022
+Observation: A umask of 022 subtracts write permission for group and others
+from the default 666 (files) and 777 (directories), which is why new files
+were created as 644 and new directories as 755 before any manual chmod was
+applied.
+
+6. How Permissions Protect Project Data
+Explanation: Linux enforces access control through three permission classes
+(owner, group, others) with three permission types each (read, write,
+execute). By tightening ProjectAlpha to 750 and notes.txt to 640, only the
+project owner can modify files, only trusted group members can view them,
+and all other system users are completely blocked from reading, writing, or
+even listing the directory's contents. This follows the principle of least
+privilege, reducing the risk of accidental exposure or tampering with
+sensitive project data.
